@@ -69,6 +69,28 @@ precision_recall<- function (path, theta, verbose = TRUE, plot = FALSE, flip = T
   return(ROC)
 }
 
+rmvzinegbin_new <- function(n, mu, Sigma, munbs, ks, ps, ...) {
+  # Generate an NxD matrix of Zero-inflated poisson data,
+  # with counts approximately correlated according to Sigma
+  Cor <- cov2cor(Sigma)
+  SDs <- sqrt(diag(Sigma))
+  if (missing(munbs) || missing(ps) || missing(ks)) {
+    if (length(mu) != length(SDs)) stop("Sigma and mu dimensions don't match")
+    munbs <- unlist(lapply(1:length(SDs), function(i) .zinegbin_getLam(mu[i], SDs[i])))
+    ps   <- unlist(lapply(1:length(SDs), function(i) .zinegbin_getP(mu[i], munbs[i])))
+    ks   <- unlist(lapply(1:length(SDs), function(i) .zinegbin_getK(mu[i], SDs[i], munbs[i])))
+  }
+  if (length(munbs) != length(SDs)) stop("Sigma and mu dimensions don't match")
+  d   <- length(munbs)
+  
+  
+  normd  <- SpiecEasi::rmvnorm(n, rep(0, d), Sigma=Cor)
+  unif   <- pnorm(normd)
+  
+  data <- t(matrix(VGAM::qzinegbin(t(unif), munb=munbs, size=ks, pstr0=ps, ...), d, n))
+  return(data)
+}
+
 
 max_off_diagonal_value = function(S) {
   S_diag_off = S

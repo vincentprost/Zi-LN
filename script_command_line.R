@@ -15,6 +15,8 @@ option_list = list(
             help="topology of network"),
   make_option(c("-n", "--number_of_data_points"), type="integer", default=50, 
               help="dataset file name"),
+  make_option(c("-g", "--data_generation_model"), type="character", default="PZiLN", 
+              help="data_generation_model"),
   make_option(c("-m", "--method"), type="character", default="glasso", 
               help="method"),
   make_option(c("-s", "--seed"), type="integer", default=50, 
@@ -47,33 +49,44 @@ graph <- SpiecEasi::make_graph(topo, d, e)
 Prec  <- SpiecEasi::graph2prec(graph, targetCondition = 100)
 Cov = SpiecEasi::prec2cov(Prec)
 
-
-mu = runif(d, 0, 3)        
-
-log_Y = SpiecEasi::rmvnorm(n, mu, Sigma=Cov)
-log_Y_old = log_Y
-
+    
 pstr = runif(d, 0, 0.9)
-for(i in 1:d) {
-  s = sort(log_Y[,i])
-  cut_index = floor(n * pstr[i]) + 1
-  log_Y[log_Y[,i] < s[cut_index], i] = - Inf
+
+if(opt$data_generation_model == "PZiLN"){
+  seq_depth = "TS"
+  mu = runif(d, 0, 3)    
+  log_Y = SpiecEasi::rmvnorm(n, mu, Sigma=Cov)
+  for(i in 1:d) {
+    s = sort(log_Y[,i])
+    cut_index = floor(n * pstr[i]) + 1
+    log_Y[log_Y[,i] < s[cut_index], i] = - Inf
+  }
+  Y = exp(log_Y)
+
+  P = Y  /  apply(Y, 1, sum)
+  X = matrix(0, n , d)
+  s_mu = 1500000
+  size = 5
+  s_var = s_mu + s_mu^2 / size
+
+  sequencing_depth = rmvnegbin(n, matrix(s_mu * d, 1, 1), matrix(s_var, 1, 1))
+
+  for(i in 1:n){
+    X[i,] = rmultinom(1, size =  sequencing_depth[i], P[i,])
+  }
 }
+if(opt$data_generation_model == "norta"){
+  seq_depth = "unif"
+  munbs = exp(runif(d, 0, 3))
+  X = rmvzinegbin_new(n, ks = 10, munbs=munbs,
+                      ps= pstr, Sigma=Cov)
 
-Y = exp(log_Y)
-
-P = Y  /  apply(Y, 1, sum)
-X = matrix(0, n , d)
-s_mu = 1500000
-size = 5
-s_var = s_mu + s_mu^2 / size
-
-sequencing_depth = rmvnegbin(n, matrix(s_mu * d, 1, 1), matrix(s_var, 1, 1))
-
-for(i in 1:n){
-  X[i,] = rmultinom(1, size =  sequencing_depth[i], P[i,])
+  while(sum(apply(X == 0, 2, sum) == n) > 0){
+    print("columns full a zeros, re-sample")
+    X = rmvzinegbin_new(n, ks = 10, munbs=munbs,
+                      ps= pstr, Sigma=Cov)
+  }
 }
-
 
 
 paths = list()
@@ -110,15 +123,15 @@ if(method == "mb") {
   path = mb$path
 }
 if(method == "magma-glasso") {
-  magma_Stool <- magma(data = X, distrib = "ZINB", method = "glasso",  seq_depth = "TS", magma.select = FALSE)
+  magma_Stool <- magma(data = X, distrib = "ZINB", method = "glasso",  seq_depth = seq_depth, magma.select = FALSE)
   path = magma_Stool$path
 }
 if(method == "magma-mb") {
-  magma_Stool <- magma(data = X, distrib = "ZINB", method = "mb",  seq_depth = "TS", magma.select = FALSE)
+  magma_Stool <- magma(data = X, distrib = "ZINB", method = "mb",  seq_depth = seq_depth, magma.select = FALSE)
   path = magma_Stool$path
 }
 if(method == "ZiLN-glasso"){
-  Z = infer_Z(X)
+  Z = infer_Z(X, seq_depth = seq_depth)
   rho_mat = matrix(1, d,d)
   diag(rho_mat) = 0           
   S = cor(Z)
@@ -132,7 +145,7 @@ if(method == "ZiLN-glasso"){
   path = quic_path_Z2
 }
 if(method == "ZiLN-mb"){
-  Z = infer_Z(X)
+  Z = infer_Z(X, seq_depth = seq_depth)
   S = cor(Z)
   lamda_max = max_off_diagonal_value(S)
   pen = lamda_path(lamda_max = lamda_max)
@@ -184,7 +197,7 @@ if(method == "flashweave"){
 }
 
 
-pr = precision_recall(path, graph, verbose=FALSE)
+pr = precision_recall(path, graph, verbose=FALSE, plot = T)
 cat(pr$AUC, method, d, topo, n, "\n", sep = "\t")
 write(paste(pr$AUC, method, d, topo, n, sep = "\t"),file=opt$output,append=TRUE)
 

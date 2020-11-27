@@ -15,22 +15,30 @@ z_d = function(z, mean = 0, sd = 1){
 }
 
 
-infer_Z = function(X) {
+infer_Z = function(X, seq_depth = "TS") {
   
   d = dim(X)[2]
   n = dim(X)[1]
 
   X_clr = matrix(0, n, d)
-  X_n = X / apply(X, 1, sum)
+  nz = X != 0
   
-  X_n = X / apply(X, 1, sum)
-  for(i in 1:n) {
-    X_clr[i,] = log(X_n[i,]) - mean(log(X_n[i,X_n[i,] != 0]))
+  if( seq_depth == "TS"){
+    X_n = X / apply(X, 1, sum)
+    for(i in 1:n) {
+      X_clr[i,] = log(X_n[i,]) - mean(log(X_n[i,X_n[i,] != 0]))
+    }
+  }
+  if(seq_depth == "unif"){
+    for(k in 1:d){
+      nz_X_k = X[nz[,k],k]
+      emp = ecdf(c(nz_X_k, max(nz_X_k) + 1))
+      X_clr[,k] = qnorm(emp(X[,k]))
+    }
+    X_clr[!nz] = -Inf
   }
   
   log_ratios = X_clr
-  nz = is.finite(log_ratios)
-
   a = double(n)
   
   for(i in 1:d){
@@ -51,7 +59,6 @@ infer_Z = function(X) {
       Z_0 =  integrate(dnorm, lower = -Inf, upper = a[i], mean = mu, sd =  sigma)
 
       Z[X[,i] == 0, i] = exp_Z_0$value / Z_0$value
-
       # Handle small sigma
       if(sigma < 1e-5){
         Z[X[,i] == 0, i] = -10
