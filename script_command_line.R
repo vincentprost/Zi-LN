@@ -5,11 +5,8 @@ library(stats)
 library(rMAGMA)
 library(QUIC)
 library(huge)
-
-
-
-
-library("optparse")
+library(JuliaCall)
+library(optparse)
  
 option_list = list(
   make_option(c("-d", "--dimension"), type="integer", default=50, 
@@ -21,7 +18,11 @@ option_list = list(
   make_option(c("-m", "--method"), type="character", default="glasso", 
               help="method"),
   make_option(c("-s", "--seed"), type="integer", default=50, 
-              help="number of variables")
+              help="number of variables"),
+  make_option(c("-o", "--output"), type="character", default="output.txt", 
+              help="output_file"),
+  make_option(c("-j", "--julia"), type="character", default="usr/local/bin", 
+              help="location of julia home")
 )
 
 
@@ -29,9 +30,9 @@ opt_parser = OptionParser(option_list=option_list)
 opt = parse_args(opt_parser)
 
 
+
 source("inference.R")
 source("utils.R")
-
 
 
 
@@ -39,8 +40,6 @@ d = opt$dimension
 topo = opt$topology
 n = opt$number_of_data_points
 method = opt$method
-
-
 set.seed(opt$seed)
 
 e <- d
@@ -132,7 +131,6 @@ if(method == "ZiLN-glasso"){
   }
   path = quic_path_Z2
 }
-
 if(method == "ZiLN-mb"){
   Z = infer_Z(X)
   S = cor(Z)
@@ -145,17 +143,44 @@ if(method == "sparcc"){
   scc = sparcc(X)
   S = scc$Cor
   lamda_max = max_off_diagonal_value(S)
-  threshold = (1:20) / (20 / lamda_max)
+  nlamda = 20
+  threshold = (1:nlamda) / (nlamda / lamda_max)
   path = list()
   for(k in 1:length(threshold)){
     path[[k]] = S >= threshold[k]
+  }
+}
+if(method == "flashweave"){
+  # TODO 
+  julia_setup(JULIA_HOME = opt$julia)
+  write.csv(X, file = "data/X.csv")
+  julia_command("using FlashWeave")
+  julia_command('data_path = "data/X.csv"')
+  edge_names = paste0("V", 1:d)
+  
+  path = list()
+  nlamda = 20
+  threshold = (1:nlamda) / (nlamda  / 0.95)
+
+  for(k in 1:length(threshold)){
+    julia_command(paste('netw_results = learn_network(data_path, sensitive=true, heterogeneous=false, alpha = ', threshold[k] ,')'))
+    julia_command('save_network("data/network_output.gml", netw_results)')
+    julia_command('save_network("data/network_output.edgelist", netw_results)')
+    edge_list = read.table("data/network_output.edgelist", stringsAsFactors = F)
+    v1 = factor(edge_list[,1], levels = edge_names)
+    v2 = factor(edge_list[,2], levels = edge_names)
+    S = matrix(0, d, d)
+    for(i in 1:length(v1)){
+      S[v1[i], v2[i]] = 1
+    }
+    path[[k]] = S
   }
 }
 
 
 pr = precision_recall(path, graph, verbose=FALSE)
 cat(pr$AUC, method, d, topo, n, "\n", sep = "\t")
-write(paste(pr$AUC, method, d, topo, n, sep = "\t"),file="out.txt",append=TRUE)
+write(paste(pr$AUC, method, d, topo, n, sep = "\t"),file=opt$output,append=TRUE)
 
 
 
