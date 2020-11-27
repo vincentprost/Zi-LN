@@ -151,22 +151,28 @@ if(method == "sparcc"){
   }
 }
 if(method == "flashweave"){
+
+  dir.create("data", showWarnings = FALSE)
   # TODO 
   julia_setup(JULIA_HOME = opt$julia)
-  write.csv(X, file = "data/X.csv")
+  output_without_ext = tools::file_path_sans_ext(opt$output)
+
+  write.csv(X, file = paste("data/", output_without_ext, "_X.csv", sep = ""))
   julia_command("using FlashWeave")
-  julia_command('data_path = "data/X.csv"')
+  julia_command(paste('data_path = "data/', output_without_ext, '_X.csv"', sep = ""))
   edge_names = paste0("V", 1:d)
   
   path = list()
   nlamda = 20
   threshold = (1:nlamda) / (nlamda  / 0.95)
 
+
   for(k in 1:length(threshold)){
-    julia_command(paste('netw_results = learn_network(data_path, sensitive=true, heterogeneous=false, alpha = ', threshold[k] ,')'))
-    julia_command('save_network("data/network_output.gml", netw_results)')
-    julia_command('save_network("data/network_output.edgelist", netw_results)')
-    edge_list = read.table("data/network_output.edgelist", stringsAsFactors = F)
+    julia_command(paste('netw_results = learn_network(data_path, sensitive=true, heterogeneous=false, alpha = ', threshold[k] ,')', sep = ""))
+    cat('save_network("data/',output_without_ext, '.edgelist", netw_results)', sep = "")
+    julia_command(paste('save_network("data/',output_without_ext, '.edgelist", netw_results)', sep = ""))
+
+    edge_list = read.table(paste("data/", output_without_ext, ".edgelist", sep = ""))
     v1 = factor(edge_list[,1], levels = edge_names)
     v2 = factor(edge_list[,2], levels = edge_names)
     S = matrix(0, d, d)
