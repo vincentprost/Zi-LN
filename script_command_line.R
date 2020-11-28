@@ -65,11 +65,7 @@ if(opt$data_generation_model == "PZiLN"){
 
   P = Y  /  apply(Y, 1, sum)
   X = matrix(0, n , d)
-  s_mu = 1500000
-  size = 5
-  s_var = s_mu + s_mu^2 / size
-
-  sequencing_depth = rmvnegbin(n, matrix(s_mu * d, 1, 1), matrix(s_var, 1, 1))
+  qnbinom(t(runif(n)), mu=150000, size=2)
 
   for(i in 1:n){
     X[i,] = rmultinom(1, size =  sequencing_depth[i], P[i,])
