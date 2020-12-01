@@ -181,7 +181,7 @@ if(method == "flashweave"){
     cat('save_network("data/',output_without_ext, '.edgelist", netw_results)', sep = "")
     julia_command(paste('save_network("data/',output_without_ext, '.edgelist", netw_results)', sep = ""))
 
-    edge_list <- try(read.table(paste("tmp/", output_without_ext, ".edgelist", sep = "")))
+    edge_list <- try(read.table(paste("data/", output_without_ext, ".edgelist", sep = "")))
     if(inherits(edge_list, "try-error")){
       S = matrix(0, d, d) 
     }
