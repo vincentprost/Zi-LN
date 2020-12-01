@@ -181,12 +181,17 @@ if(method == "flashweave"){
     cat('save_network("data/',output_without_ext, '.edgelist", netw_results)', sep = "")
     julia_command(paste('save_network("data/',output_without_ext, '.edgelist", netw_results)', sep = ""))
 
-    edge_list = read.table(paste("data/", output_without_ext, ".edgelist", sep = ""))
-    v1 = factor(edge_list[,1], levels = edge_names)
-    v2 = factor(edge_list[,2], levels = edge_names)
-    S = matrix(0, d, d)
-    for(i in 1:length(v1)){
-      S[v1[i], v2[i]] = 1
+    edge_list <- try(read.table(paste("tmp/", output_without_ext, ".edgelist", sep = "")))
+    if(inherits(edge_list, "try-error")){
+      S = matrix(0, d, d) 
+    }
+    else{
+      v1 = factor(edge_list[,1], levels = edge_names)
+      v2 = factor(edge_list[,2], levels = edge_names)
+      S = matrix(0, d, d)
+      for(i in 1:length(v1)){
+        S[v1[i], v2[i]] = 1
+      }
     }
     path[[k]] = S
   }
