@@ -23,7 +23,7 @@ option_list = list(
               help="number of variables"),
   make_option(c("-o", "--output"), type="character", default="output.txt", 
               help="output_file"),
-  make_option(c("-j", "--julia"), type="character", default="usr/local/bin", 
+  make_option(c("-j", "--julia"), type="character", default="/usr/local/bin", 
               help="location of julia home")
 )
 
@@ -172,8 +172,8 @@ if(method == "flashweave"){
   edge_names = paste0("V", 1:d)
   
   path = list()
-  nlamda = 20
-  threshold = (1:nlamda) / (nlamda  / 0.95)
+  nlamda = 12
+  threshold = lamda_path(0.7, 1e-5, nlamda)
 
 
   for(k in 1:length(threshold)){
@@ -196,8 +196,5 @@ if(method == "flashweave"){
 pr = precision_recall(path, graph, verbose=FALSE, plot = T)
 cat(pr$AUC, method, d, topo, n, "\n", sep = "\t")
 write(paste(pr$AUC, method, d, topo, n, sep = "\t"),file=opt$output,append=TRUE)
-
-
-
 
 
