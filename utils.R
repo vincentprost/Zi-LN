@@ -91,7 +91,6 @@ rmvzinegbin_new <- function(n, mu, Sigma, munbs, ks, ps, ...) {
   return(data)
 }
 
-
 max_off_diagonal_value = function(S) {
   S_diag_off = S
   diag(S_diag_off) = 0
