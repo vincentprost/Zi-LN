@@ -156,7 +156,7 @@ if(method == "sparcc"){
   threshold = (1:nlamda) / (nlamda / lamda_max)
   path = list()
   for(k in 1:length(threshold)){
-    path[[k]] = S >= threshold[k]
+    path[[k]] = abs(S) >= threshold[k]
   }
 }
 if(method == "flashweave"){
