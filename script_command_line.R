@@ -191,6 +191,7 @@ if(method == "flashweave"){
       S = matrix(0, d, d)
       for(i in 1:length(v1)){
         S[v1[i], v2[i]] = 1
+        S[v2[i], v1[i]] = 1
       }
     }
     path[[k]] = S
@@ -200,6 +201,6 @@ if(method == "flashweave"){
 
 pr = precision_recall(path, graph, verbose=FALSE, plot = T)
 cat(pr$AUC, method, d, topo, n, "\n", sep = "\t")
-write(paste(pr$AUC, method, d, topo, n, sep = "\t"),file=opt$output,append=TRUE)
+write(paste(pr$AUC, method, d, topo, n, sep = "\t"), file=opt$output, append=TRUE)
 
 
