@@ -17,8 +17,8 @@ option_list = list(
               help="dataset file name"),
   make_option(c("-z", "--sparsity"), type="numeric", default=0.45, 
               help="proportion of zeros"),
-  make_option(c("-zm", "--sparsity_max"), type="numeric", default=0.9, 
-              help="max of sparsity for individual OTU"),
+  make_option(c("-y", "--sparsity_max"), type="numeric", default=0.9, 
+              help="max of sparsity for individual OTUs"),
   make_option(c("-g", "--data_generation_model"), type="character", default="PZiLN", 
               help="data_generation_model"),
   make_option(c("-m", "--method"), type="character", default="glasso", 
@@ -180,29 +180,27 @@ if(method == "flashweave"){
   edge_names = paste0("V", 1:d)
   
   path = list()
-  nlamda = 12
-  threshold = lamda_path(0.7, 1e-5, nlamda)
+  nlamda = 20
+  
 
+  julia_command(paste('netw_results = learn_network(data_path, sensitive=true, heterogeneous=false)', sep = ""))
+  cat('save_network("data/',output_without_ext, '.edgelist", netw_results)', sep = "")
+  julia_command(paste('save_network("data/',output_without_ext, '.edgelist", netw_results)', sep = ""))
+
+  edge_list <- read.table(paste("data/", output_without_ext, ".edgelist", sep = ""))
+  edges = abs(edge_list[,3])
+  threshold = seq(min(edges),  max(edges), (max(edges) - min(edges)) / nlamda)
+
+  v1 = factor(edge_list[,1], levels = edge_names)
+  v2 = factor(edge_list[,2], levels = edge_names)
+  S = matrix(0, d, d)
+  for(i in 1:length(v1)){
+    S[v1[i], v2[i]] = edges[i]
+    S[v2[i], v1[i]] = edges[i]
+  }
 
   for(k in 1:length(threshold)){
-    julia_command(paste('netw_results = learn_network(data_path, sensitive=true, heterogeneous=false, alpha = ', threshold[k] ,')', sep = ""))
-    cat('save_network("data/',output_without_ext, '.edgelist", netw_results)', sep = "")
-    julia_command(paste('save_network("data/',output_without_ext, '.edgelist", netw_results)', sep = ""))
-
-    edge_list <- try(read.table(paste("data/", output_without_ext, ".edgelist", sep = "")))
-    if(inherits(edge_list, "try-error")){
-      S = matrix(0, d, d) 
-    }
-    else{
-      v1 = factor(edge_list[,1], levels = edge_names)
-      v2 = factor(edge_list[,2], levels = edge_names)
-      S = matrix(0, d, d)
-      for(i in 1:length(v1)){
-        S[v1[i], v2[i]] = 1
-        S[v2[i], v1[i]] = 1
-      }
-    }
-    path[[k]] = S
+    path[[k]] = S > threshold[k]
   }
 }
 
