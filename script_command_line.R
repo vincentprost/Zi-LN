@@ -15,6 +15,8 @@ option_list = list(
             help="topology of network"),
   make_option(c("-n", "--number_of_data_points"), type="integer", default=50, 
               help="dataset file name"),
+  make_option(c("-z", "--sparsity"), type="numeric", default=0.45, 
+              help="proportion of zeros"),
   make_option(c("-g", "--data_generation_model"), type="character", default="PZiLN", 
               help="data_generation_model"),
   make_option(c("-m", "--method"), type="character", default="glasso", 
@@ -49,8 +51,12 @@ graph <- SpiecEasi::make_graph(topo, d, e)
 Prec  <- SpiecEasi::graph2prec(graph, targetCondition = 100)
 Cov = SpiecEasi::prec2cov(Prec)
 
-    
-pstr = runif(d, 0, 0.9)
+
+sparsity = opt$sparsity
+pstr_max = 0.9
+t = pstr_max / sparsity - 1
+pstr = ((1:d) / d)^t
+
 
 if(opt$data_generation_model == "PZiLN"){
   seq_depth = "TS"
