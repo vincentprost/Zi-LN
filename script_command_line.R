@@ -195,8 +195,11 @@ if(method == "flashweave"){
   v2 = factor(edge_list[,2], levels = edge_names)
   S = matrix(0, d, d)
   for(i in 1:length(v1)){
-    S[v1[i], v2[i]] = edges[i]
-    S[v2[i], v1[i]] = edges[i]
+    w = edges[i]
+    if(w != 0) {
+      S[v1[i], v2[i]] = w
+      S[v2[i], v1[i]] = w
+    }
   }
 
   for(k in 1:length(threshold)){
