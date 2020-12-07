@@ -57,8 +57,7 @@ Cov = SpiecEasi::prec2cov(Prec)
 sparsity = opt$sparsity
 pstr_max = opt$sparsity_max
 t = pstr_max / sparsity - 1
-pstr = ((1:d) / d)^t
-
+pstr = pstr_max * ((1:d) / d)^t
 
 if(opt$data_generation_model == "PZiLN"){
   seq_depth = "TS"
@@ -78,6 +77,7 @@ if(opt$data_generation_model == "PZiLN"){
   for(i in 1:n){
     X[i,] = rmultinom(1, size =  sequencing_depth[i], P[i,])
   }
+
 }
 if(opt$data_generation_model == "norta"){
   seq_depth = "unif"
@@ -86,7 +86,7 @@ if(opt$data_generation_model == "norta"){
                       ps= pstr, Sigma=Cov)
 
   while(sum(apply(X == 0, 2, sum) == n) > 0){
-    print("columns full a zeros, re-sample")
+    print("columns full of zeros, re-sample")
     X = rmvzinegbin_new(n, ks = 10, munbs=munbs,
                       ps= pstr, Sigma=Cov)
   }
