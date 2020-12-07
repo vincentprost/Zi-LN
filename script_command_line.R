@@ -17,6 +17,8 @@ option_list = list(
               help="dataset file name"),
   make_option(c("-z", "--sparsity"), type="numeric", default=0.45, 
               help="proportion of zeros"),
+  make_option(c("-zm", "--sparsity_max"), type="numeric", default=0.9, 
+              help="max of sparsity for individual OTU"),
   make_option(c("-g", "--data_generation_model"), type="character", default="PZiLN", 
               help="data_generation_model"),
   make_option(c("-m", "--method"), type="character", default="glasso", 
@@ -53,7 +55,7 @@ Cov = SpiecEasi::prec2cov(Prec)
 
 
 sparsity = opt$sparsity
-pstr_max = 0.9
+pstr_max = opt$sparsity_max
 t = pstr_max / sparsity - 1
 pstr = ((1:d) / d)^t
 
