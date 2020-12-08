@@ -28,7 +28,9 @@ option_list = list(
   make_option(c("-o", "--output"), type="character", default="output.txt", 
               help="output_file"),
   make_option(c("-j", "--julia"), type="character", default="/usr/local/bin", 
-              help="location of julia home")
+              help="location of julia home"),
+  make_option(c("-f", "--fit"), type="character", default=NULL, 
+              help="data for fitting parameters")
 )
 
 
@@ -40,7 +42,8 @@ opt = parse_args(opt_parser)
 source("inference.R")
 source("utils.R")
 
-
+##################################
+######## Data generation #########
 
 d = opt$dimension
 topo = opt$topology
@@ -58,6 +61,8 @@ sparsity = opt$sparsity
 pstr_max = opt$sparsity_max
 t = pstr_max / sparsity - 1
 pstr = pstr_max * ((1:d) / d)^t
+
+
 
 if(opt$data_generation_model == "PZiLN"){
   seq_depth = "TS"
@@ -82,7 +87,32 @@ if(opt$data_generation_model == "PZiLN"){
 if(opt$data_generation_model == "norta"){
   seq_depth = "unif"
   munbs = exp(runif(d, 0, 3))
-  X = rmvzinegbin_new(n, ks = 10, munbs=munbs,
+  ks = 10
+  if(!is.null(opt$fit)){
+    if (opt$fit == "amgut1.filt") {
+      data(amgut1.filt)
+      source_df = amgut1.filt
+    }
+    else{
+      source_df = read.table(source_data, sep="\t")
+    }
+    depths <- rowSums(source_df)
+    source_filt_n <- t(apply(source_df, 1, norm_to_total))
+    source_filt_cs <- round(source_filt_n * min(depths))
+    d <- ncol(source_filt_cs)
+    if (n <= 0) {
+      n = nrow(source_filt_cs)
+    }
+    e <- d
+    graph <- SpiecEasi::make_graph(topo, d, e)
+    Prec <- SpiecEasi::graph2prec(graph, targetCondition = 100)
+    Cov <- SpiecEasi::prec2cov(Prec)
+    paramat = fit_parameters(source_filt_cs)
+    ks = paramat$size
+    munbs = munbs=paramat$munb
+    pstr = paramat$pstr0
+  }
+  X = rmvzinegbin_new(n, ks = ks, munbs=munbs,
                       ps= pstr, Sigma=Cov)
 
   while(sum(apply(X == 0, 2, sum) == n) > 0){
@@ -92,6 +122,10 @@ if(opt$data_generation_model == "norta"){
   }
 }
 
+
+
+##################################
+######## Network Inference #######
 
 paths = list()
 
@@ -206,6 +240,7 @@ if(method == "flashweave"){
     path[[k]] = S > threshold[k]
   }
 }
+
 
 
 pr = precision_recall(path, graph, verbose=FALSE, plot = T)
