@@ -69,6 +69,7 @@ precision_recall<- function (path, theta, verbose = TRUE, plot = FALSE, flip = T
   return(ROC)
 }
 
+
 rmvzinegbin_new <- function(n, mu, Sigma, munbs, ks, ps, ...) {
   # Generate an NxD matrix of Zero-inflated poisson data,
   # with counts approximately correlated according to Sigma
@@ -105,3 +106,10 @@ lamda_path = function(lamda_max = 1, lamda_ratio = 0.1, nlambda=12){
   return(pen)
 }
 
+
+fit_parameters = function(X) {
+  params = get_comm_params(X, 2, "zinegbin")
+  paramat <- do.call('rbind', params)
+  paramat <- data.frame(apply(paramat, 2, as.numeric))
+  return(paramat)
+}
