@@ -60,7 +60,7 @@ Cov = SpiecEasi::prec2cov(Prec)
 sparsity = opt$sparsity
 pstr_max = opt$sparsity_max
 t = pstr_max / sparsity - 1
-pstr = pstr_max * ((1:d) / d)^t
+pstr = pstr_max * ((1:d - 0.1) / d)^t
 
 
 
