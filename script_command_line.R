@@ -245,6 +245,6 @@ if(method == "flashweave"){
 
 pr = precision_recall(path, graph, verbose=FALSE, plot = T)
 cat(pr$AUC, method, d, topo, n, "\n", sep = "\t")
-write(paste(pr$AUC, method, d, topo, n, sep = "\t"), file=opt$output, append=TRUE)
+write(paste(pr$AUC, method, d, topo, n, opt$data_generation_model, sep = "\t"), file=opt$output, append=TRUE)
 
 
