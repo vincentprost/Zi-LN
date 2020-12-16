@@ -1,11 +1,11 @@
-for d in 100 300 500; 
-do for topo in band erdos_renyi scale_free; 
-do for n in 50 100 300 1000; 
+for n in 100; 
+do for zeros in 0 0.1 0.5 0.7 0.9;
+do for model in norta PZiLN; 
 do for method in Spiec-Easi-glasso Spiec-Easi-mb glasso mb magma-glasso magma-mb ZiLN-glasso ZiLN-mb sparcc flashweave; 
-do Rscript script_command_line.R -d $d -t $topo -n $n -m $method -s {} -o norta_{}.txt -g norta; 
+do Rscript script_command_line.R -d 300 -t erdos_renyi -g $model -z $zeros -y 0.98 -n 100 -m $method -s {} -o zeros_ziln_{}.txt; 
 done; done; done; done
 
-cat output_*.txt > output.txt
-rm output_*.txt
+cat zeros_ziln_*.txt > zeros_ziln.txt
+rm zeros_ziln_*.txt
 
-Rscript draw_figure_2.R
+Rscript draw_figure_3.R
