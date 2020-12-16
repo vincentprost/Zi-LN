@@ -17,7 +17,7 @@
 ### Figure 2
 
 ```bash
-
+./draw_figure_2.sh
 ```
 
 
@@ -25,14 +25,14 @@
 
 
 ```bash
-
+./draw_figure_3.sh
 ```
 
 
 ### Figure 6
 
 ```bash
-
+./draw_figure_6.sh
 ```
 
 
