@@ -1,6 +1,5 @@
 # Zi-LN
 
-## Simulations
 
 ### R package dependencies
 
@@ -11,6 +10,8 @@
 * huge
 * JuliaCall
 * optparse
+* ggplot2
+* ggh4x
 
 
 ### Figure 2
@@ -39,7 +40,7 @@ done; done; done; done
 ```
 
 
-### Figure 2 bis
+### Figure 6
 
 ```bash
 for seed {1..10}; do for d in 100 300 500; 
@@ -50,6 +51,4 @@ do Rscript script_command_line.R -d $d -t $topo -n $n -m $method -s $seed -o out
 done; done; done; done; done
 ```
 
-
-## Generating figures from data
 
