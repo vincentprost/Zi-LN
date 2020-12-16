@@ -1,3 +1,5 @@
+#!/bin/bash
+
 for n in 100; 
 do for zeros in 0 0.1 0.5 0.7 0.9;
 do for model in norta PZiLN; 
