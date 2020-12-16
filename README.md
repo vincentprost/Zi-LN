@@ -1,6 +1,8 @@
 # Zi-LN
 
-# R package dependencies
+## Simulations
+
+### R package dependencies
 
 * SpiecEasi
 * stats
@@ -10,7 +12,8 @@
 * JuliaCall
 * optparse
 
-# Figure 2
+
+### Figure 2
 
 ```bash
 for seed {1..10}; 
@@ -23,7 +26,7 @@ done; done; done; done; done
 ```
 
 
-# Figure 3
+### Figure 3
 
 
 ```bash
@@ -36,7 +39,7 @@ done; done; done; done
 ```
 
 
-# Figure 2 bis
+### Figure 2 bis
 
 ```bash
 for seed {1..10}; do for d in 100 300 500; 
@@ -46,4 +49,7 @@ do for method in Spiec-Easi-glasso Spiec-Easi-mb glasso mb magma-glasso magma-mb
 do Rscript script_command_line.R -d $d -t $topo -n $n -m $method -s $seed -o output_$seed.txt; 
 done; done; done; done; done
 ```
+
+
+## Generating figures from data
 
