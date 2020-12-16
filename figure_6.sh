@@ -1,3 +1,5 @@
+#!/bin/bash
+
 for d in 100 300 500; 
 do for topo in band erdos_renyi scale_free; 
 do for n in 50 100 300 1000; 
