@@ -203,14 +203,15 @@ if(method == "sparcc"){
 }
 if(method == "flashweave"){
 
-  dir.create("data", showWarnings = FALSE)
+  
   # TODO 
+  dir.create("tmp", showWarnings = FALSE)
   julia_setup(JULIA_HOME = opt$julia)
-  output_without_ext = tools::file_path_sans_ext(opt$output)
+  output_without_ext =basename(tools::file_path_sans_ext(opt$output))
 
-  write.csv(X, file = paste("data/", output_without_ext, "_X.csv", sep = ""))
+  write.csv(X, file = paste("tmp/", output_without_ext, "_X.csv", sep = ""))
   julia_command("using FlashWeave")
-  julia_command(paste('data_path = "data/', output_without_ext, '_X.csv"', sep = ""))
+  julia_command(paste('data_path = "tmp/', output_without_ext, '_X.csv"', sep = ""))
   edge_names = paste0("V", 1:d)
   
   path = list()
@@ -218,10 +219,10 @@ if(method == "flashweave"){
   
 
   julia_command(paste('netw_results = learn_network(data_path, sensitive=true, heterogeneous=false)', sep = ""))
-  cat('save_network("data/',output_without_ext, '.edgelist", netw_results)', sep = "")
-  julia_command(paste('save_network("data/',output_without_ext, '.edgelist", netw_results)', sep = ""))
+  cat('save_network("tmp/', output_without_ext, '.edgelist", netw_results)', sep = "")
+  julia_command(paste('save_network("tmp/', output_without_ext, '.edgelist", netw_results)', sep = ""))
 
-  edge_list <- read.table(paste("data/", output_without_ext, ".edgelist", sep = ""))
+  edge_list <- read.table(paste("tmp/", output_without_ext, ".edgelist", sep = ""))
   edges = abs(edge_list[,3])
   threshold = seq(min(edges),  max(edges), (max(edges) - min(edges)) / nlamda)
 
@@ -240,7 +241,6 @@ if(method == "flashweave"){
     path[[k]] = S > threshold[k]
   }
 }
-
 
 
 pr = precision_recall(path, graph, verbose=FALSE, plot = T)
