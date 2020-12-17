@@ -3,7 +3,6 @@ library(ggh4x)
 
 
 aupr.df = read.table( "output.txt", col.names = c("aupr", "method", "d", "topo", "n", "model", "sparsity"))
-aupr.df = read.table( "output.txt", col.names = c("aupr", "method", "d", "topo", "n"))
 df_sum = data.frame(mean = numeric(), sd = numeric(), method = character(), n = character(), d = numeric(), upper_quantile = numeric(), lower_quantile = numeric(), topo = character(), topo_title = character(), dimension_title = character())
 
 
