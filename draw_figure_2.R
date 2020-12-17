@@ -69,7 +69,7 @@ p <- ggplot(df_sum, aes(x = n, y = mean, fill = method))  + facet_nested( dimens
                 position=position_dodge(0.8))
 
 
-pdf("aupr_fig2.pdf", 8, 8)
+pdf("aupr_fig_2.pdf", 8, 8)
 print(p)
 dev.off()
 
