@@ -3,13 +3,13 @@
 
 ### R package dependencies
 
-* SpiecEasi
+* SpiecEasi (1.0.7)
 * stats
-* rMAGMA
-* QUIC
-* huge
-* JuliaCall
-* optparse
+* rMAGMA (0.93)
+* QUIC (1.1)
+* huge (1.3.4)
+* JuliaCall (0.17.1)
+* optparse (1.6.6)
 * ggplot2 (3.3.2)
 * ggh4x
 
