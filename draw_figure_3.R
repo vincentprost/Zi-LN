@@ -2,7 +2,7 @@ library(ggplot2)
 library(ggh4x)
 
 
-aupr.df = read.table( "zeros_ziln.txt", col.names = c("aupr", "method", "d", "topo", "n", "model", "sparsity"))
+aupr.df = read.table( "zeros.txt", col.names = c("aupr", "method", "d", "topo", "n", "model", "sparsity"))
 df_sum = data.frame(mean = numeric(), sd = numeric(), method = character(), model = character(), sparsity = character(), upper_quantile = numeric(), lower_quantile = numeric(), topo = character())
 
 n_unique = sort(unique(aupr.df["n"])[["n"]])
@@ -23,8 +23,7 @@ for(method_ in method_unique) {
         s = sd(values)
         upper_quantile = quantile(values)[4]
         lower_quantile = quantile(values)[2]
-        df_sum = rbind(df_sum, list(mean = m,  sd = s, method = method_, n = n_, sparsity = sparsity_,  model = model_, upper_quantile = upper_quantile, lower_quantile = lower_quantile, 
-                                    topo = topo_), stringsAsFactors=FALSE)
+        df_sum = rbind(df_sum, list(mean = m,  sd = s, method = method_, n = n_, sparsity = sparsity_,  model = model_, upper_quantile = upper_quantile, lower_quantile = lower_quantile), stringsAsFactors=FALSE)
       }
     }
   }
@@ -71,7 +70,7 @@ p <- ggplot(df_sum, aes(x = n, y = mean, fill = method))  + facet_nested( model_
 
 
 
-pdf("aupr_fig3.pdf", 8, 6)
+pdf("aupr_fig_3.pdf", 8, 6)
 print(p)
 dev.off()
 
