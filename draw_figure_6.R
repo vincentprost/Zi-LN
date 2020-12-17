@@ -2,7 +2,7 @@ library(ggplot2)
 library(ggh4x)
 
 
-aupr.df = read.table( "output_norta.txt", col.names = c("aupr", "method", "d", "topo", "n"))
+aupr.df = read.table( "zeros.txt", col.names = c("aupr", "method", "d", "topo", "n", "model", "sparsity"))
 df_sum = data.frame(mean = numeric(), sd = numeric(), method = character(), n = character(), d = numeric(), upper_quantile = numeric(), lower_quantile = numeric(), topo = character(), topo_title = character(), dimension_title = character())
 
 
