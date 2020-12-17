@@ -203,8 +203,6 @@ if(method == "sparcc"){
 }
 if(method == "flashweave"){
 
-  
-  # TODO 
   dir.create("tmp", showWarnings = FALSE)
   julia_setup(JULIA_HOME = opt$julia)
   output_without_ext =basename(tools::file_path_sans_ext(opt$output))
