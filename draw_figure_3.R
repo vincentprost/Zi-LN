@@ -2,7 +2,7 @@ library(ggplot2)
 library(ggh4x)
 
 
-aupr.df = read.table( "zeros.txt", col.names = c("aupr", "method", "d", "topo", "n", "model", "sparsity"))
+aupr.df = read.table( "zeros_ziln.txt", col.names = c("aupr", "method", "d", "topo", "n", "model", "sparsity"))
 df_sum = data.frame(mean = numeric(), sd = numeric(), method = character(), model = character(), sparsity = character(), upper_quantile = numeric(), lower_quantile = numeric(), topo = character())
 
 n_unique = sort(unique(aupr.df["n"])[["n"]])
