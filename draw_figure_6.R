@@ -16,7 +16,6 @@ for(method_ in method_unique) {
   for(d_ in d_unique) {
     for(n_ in n_unique){
       for(topo_ in topo_unique) {
-        print(c(method_, d_, n_ , topo_))
         sub_sb = subset(aupr.df, (method == method_) & (d == d_) & (n == n_) & (topo == topo_))
         values = sub_sb[,"aupr"]
         m = median(values)
