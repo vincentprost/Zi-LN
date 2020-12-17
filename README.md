@@ -20,6 +20,7 @@
 ./draw_figure_2.sh
 ```
 
+[aupr_fig_2.pdf](https://github.com/vincentprost/Zi-LN/master/aupr_fig_2.pdf).
 
 ### Figure 3
 
