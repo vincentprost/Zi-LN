@@ -10,7 +10,7 @@
 * huge
 * JuliaCall
 * optparse
-* ggplot2
+* ggplot2 (3.3.2)
 * ggh4x
 
 
