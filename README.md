@@ -1,5 +1,8 @@
 # Zi-LN
 
+This repository is the code base used for generating the experimental results of the article "A zero inflated log-normal model for inference of sparse microbial association networks". The inference method exposed in the article is implemented in the scripts [inference.R](inference.R) and [script_command_line.R](script_command_line.R) along with other methods used for benchmark.
+
+
 
 ### R package dependencies
 
