@@ -14,7 +14,12 @@ z_d = function(z, mean = 0, sd = 1){
   return(z * dnorm(z,  mean, sd))
 }
 
-
+#' Hi, I'm not exported!
+#'
+#' @param txt       what to say
+#'
+#' @export
+#' 
 infer_Z = function(X, seq_depth = "TS") {
   
   d = dim(X)[2]
