@@ -16,6 +16,9 @@ This repository is the code base used for generating the experimental results of
 * ggplot2 (3.3.2)
 * ggh4x
 
+### Julia package dependencie
+
+* FlashWeave
 
 ### Figure 2
 
