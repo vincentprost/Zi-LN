@@ -40,7 +40,7 @@ opt = parse_args(opt_parser)
 
 
 source("inference.R")
-source("utils.R")
+source("utils/utils.R")
 
 ##################################
 ######## Data generation #########
